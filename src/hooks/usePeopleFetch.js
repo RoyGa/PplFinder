@@ -9,11 +9,22 @@ export const usePeopleFetch = () => {
     fetchUsers();
   }, []);
 
-  async function fetchUsers() {
+  async function fetchUsers({ countries, overwrite } = {}) {
     setIsLoading(true);
-    const response = await axios.get(`https://randomuser.me/api/?results=25&page=1`);
+    
+    const params = {
+      nat: countries ? countries.join(',') : null,
+    };
+    
+    const response = await axios.get(`https://randomuser.me/api/?results=25`, { params });
+
+    const updatedUsers = overwrite
+    ? response.data.results
+    : [...users, ...response.data.results];
+
+    setUsers(updatedUsers);
+
     setIsLoading(false);
-    setUsers(response.data.results);
   }
 
   return { users, isLoading, fetchUsers };

@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Text from "components/Text";
 import Spinner from "components/Spinner";
 import CheckBox from "components/CheckBox";
 import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
+import { TextField } from "@material-ui/core";
 import * as S from "./style";
 
-const UserList = ({ users, isLoading }) => {
+const UserList = ({ users, isLoading, onCountryFilterChanged, onFavoriteClicked, onReachedBottom, isFavorites }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
+  
+  const [favorites, setFavorites] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const usersList = useRef(null);
 
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
@@ -17,15 +22,67 @@ const UserList = ({ users, isLoading }) => {
     setHoveredUserId();
   };
 
+  useEffect(() => {
+    usersList.current.addEventListener('scroll', () => {
+      isBottom() && onReachedBottom();
+    }); 
+  }, [users]);
+
+  const isBottom = () => {
+    const {
+      scrollHeight,
+      offsetHeight,
+      scrollTop
+    } = usersList.current;
+
+    return scrollHeight - offsetHeight === scrollTop;
+  };
+
+  const onChecked = (value) => {
+    const checked = countries.includes(value)
+    ? countries.filter(c => c !== value)
+    : [...countries, value];
+    
+    setCountries(checked);
+    onCountryFilterChanged(checked);
+
+    usersList.current.scrollTop = 0;
+  };
+
+  const handleFavoriteClicked = () => {
+    if (!favorites.includes(hoveredUserId)) {
+      setFavorites([...favorites, hoveredUserId]);
+    } else {
+      setFavorites(favorites.filter(index => index !== hoveredUserId));
+    }
+    
+    onFavoriteClicked(hoveredUserId);
+  };
+
+  const isFavorite = (index) => 
+    index === hoveredUserId
+    || favorites.includes(index)
+    || isFavorites;
+  
   return (
     <S.UserList>
-      <S.Filters>
-        <CheckBox value="BR" label="Brazil" />
-        <CheckBox value="AU" label="Australia" />
-        <CheckBox value="CA" label="Canada" />
-        <CheckBox value="DE" label="Germany" />
+      {!isFavorites && (
+        <S.Filters>
+        <CheckBox value="BR" label="Brazil" onChange={onChecked} />
+        <CheckBox value="AU" label="Australia" onChange={onChecked} />
+        <CheckBox value="CA" label="Canada" onChange={onChecked} />
+        <CheckBox value="DE" label="Germany" onChange={onChecked} />
+        <CheckBox value="ES" label="Spain" onChange={onChecked} />
       </S.Filters>
-      <S.List>
+      )}
+      {/* <S.Filters>
+        <CheckBox value="BR" label="Brazil" onChange={onChecked} />
+        <CheckBox value="AU" label="Australia" onChange={onChecked} />
+        <CheckBox value="CA" label="Canada" onChange={onChecked} />
+        <CheckBox value="DE" label="Germany" onChange={onChecked} />
+        <CheckBox value="ES" label="Spain" onChange={onChecked} />
+      </S.Filters> */}
+      <S.List ref={usersList} >
         {users.map((user, index) => {
           return (
             <S.User
@@ -46,11 +103,13 @@ const UserList = ({ users, isLoading }) => {
                   {user?.location.city} {user?.location.country}
                 </Text>
               </S.UserInfo>
-              <S.IconButtonWrapper isVisible={index === hoveredUserId}>
+              {/* <S.IconButtonWrapper isVisible={index === hoveredUserId || isFavorite(index)} onClick={handleFavoriteClicked}> */}
+              <S.IconButtonWrapper isVisible={isFavorite(index)} onClick={handleFavoriteClicked}>
                 <IconButton>
                   <FavoriteIcon color="error" />
                 </IconButton>
               </S.IconButtonWrapper>
+              {/* <TextField id="standard-basic" label="Standard" /> */}
             </S.User>
           );
         })}
