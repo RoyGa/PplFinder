@@ -15,6 +15,11 @@ export const List = styled.div`
   overflow-y: auto;
 `;
 
+export const UserWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 export const User = styled.div`
   display: flex;
   justify-content: center;
@@ -26,13 +31,14 @@ export const UserInfo = styled.div`
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  max-height: 128px;
+  max-height: 170px;
   gap: 2px;
   overflow: hidden;
 `;
 
 export const UserPicture = styled.img`
   border-radius: 45%;
+  margin: auto;
 `;
 
 export const SpinnerWrapper = styled.div`
@@ -53,4 +59,10 @@ export const Filters = styled.div`
   & > * {
     margin-inline-end: 8px;
   }
+`;
+
+export const TextFieldWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;

@@ -30,7 +30,7 @@ const ThemeProvider = ({ children, darkMode }) => {
           background: color,
           backgroundClip: "padding-box",
           border: "7px solid transparent",
-        }
+        },     
       }
     }
   };
