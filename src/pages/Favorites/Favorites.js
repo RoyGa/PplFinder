@@ -48,17 +48,31 @@ const Favorites = () => {
             Favorites
           </Text>
         </S.Header>
-        <UserList
-          users={favorites}
-          isLoading={isLoading}
-          onFavoriteClicked={handleFavoriteClicked}
-          onReachedBottom={() => setPage(page + 1)}
-          allFavorites
-          onAddComment={handleAddComment}
-        />
+        {(favorites && favorites.length) ? (
+          <UserList
+            users={favorites}
+            isLoading={isLoading}
+            onFavoriteClicked={handleFavoriteClicked}
+            onReachedBottom={() => setPage(page + 1)}
+            allFavorites
+            onAddComment={handleAddComment}
+          />
+        ) : (
+          <NoFavoriteUsersMsg />
+        )}
       </S.Content>
     </S.Favorites>
   );
 };
+
+const NoFavoriteUsersMsg = () => (
+  <div style={{ marginTop: "100px" }}>
+    <h2  style={{ textAlign: "center",  fontSize: "20px" }}>
+      No favorite users yet...
+      <br/><br/>
+    </h2>
+    <p>To add user to favorites go to home page and hit the ❤️ icon </p>
+  </div>
+);
 
 export default Favorites;
